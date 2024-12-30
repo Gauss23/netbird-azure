@@ -7,7 +7,7 @@ Netbird deployment scripts for a management server with Azure as IdP
 curl -fsSL https://get.docker.com -o get-docker.sh
 sudo sh get-docker.sh
 ```
-
+- follow the steps needed to create the App in Azure AD: https://docs.netbird.io/selfhosted/identity-providers#azure-ad-microsoft-entra-id
 - clone the repo, to some temp folder
 - change the active folder to the deploy folder
 - copy the file params_dist.sh to params.sh
