@@ -1,0 +1,104 @@
+{
+  "Stuns": [
+    {
+      "Proto": "udp",
+      "URI": "stun:###NB_PUBLIC_FQDN###:3478",
+      "Username": "",
+      "Password": ""
+    }
+  ],
+  "TURNConfig": {
+    "Turns": [
+      {
+        "Proto": "udp",
+        "URI": "turn:###NB_PUBLIC_FQDN###:3478",
+        "Username": "self",
+        "Password": "###NB_TURN_PW###"
+      }
+    ],
+    "CredentialsTTL": "12h",
+    "Secret": "",
+    "TimeBasedCredentials": false
+  },
+  "Relay": {
+    "Addresses": [
+      "rels://###NB_PUBLIC_FQDN###:443"
+    ],
+    "CredentialsTTL": "24h",
+    "Secret": "###NB_RELAY_SECRET###"
+  },
+  "Signal": {
+    "Proto": "https",
+    "URI": "###NB_PUBLIC_FQDN###:443",
+    "Username": "",
+    "Password": ""
+  },
+  "ReverseProxy": {
+    "TrustedHTTPProxies": null,
+    "TrustedHTTPProxiesCount": 0,
+    "TrustedPeers": null
+  },
+  "Datadir": "/var/lib/netbird/",
+  "DataStoreEncryptionKey": "",
+  "StoreConfig": {
+    "Engine": "postgres"
+  },
+  "HttpConfig": {
+    "AuthIssuer": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/v2.0",
+    "AuthAudience": "###AZURE_CLIENT_ID###",
+    "AuthKeysLocation": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/discovery/v2.0/keys",
+    "AuthUserIDClaim": "oid",
+    "CertFile": "",
+    "CertKey": "",
+    "IdpSignKeyRefreshEnabled": true,
+    "OIDCConfigEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/v2.0/.well-known/openid-configuration"
+  },
+  "IdpManagerConfig": {
+    "ManagerType": "azure",
+    "ClientConfig": {
+      "Issuer": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/v2.0",
+      "TokenEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/oauth2/v2.0/token",
+      "ClientID": "###AZURE_CLIENT_ID###",
+      "ClientSecret": "###AZURE_CLIENT_SECRET###",
+      "GrantType": "client_credentials"
+    },
+    "ExtraConfig": {
+      "GraphApiEndpoint": "https://graph.microsoft.com/v1.0",
+      "ObjectId": "###AZURE_OBJECT_ID###"
+    },
+    "Auth0ClientCredentials": null,
+    "AzureClientCredentials": null,
+    "KeycloakClientCredentials": null,
+    "ZitadelClientCredentials": null
+  },
+  "DeviceAuthorizationFlow": {
+    "Provider": "none",
+    "ProviderConfig": {
+      "Audience": "###AZURE_CLIENT_ID###",
+      "AuthorizationEndpoint": "",
+      "Domain": "",
+      "ClientID": "",
+      "ClientSecret": "",
+      "TokenEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/oauth2/v2.0/token",
+      "DeviceAuthEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/oauth2/v2.0/devicecode",
+      "Scope": "openid",
+      "UseIDToken": false,
+      "RedirectURLs": null
+    }
+  },
+  "PKCEAuthorizationFlow": {
+    "ProviderConfig": {
+      "Audience": "###AZURE_CLIENT_ID###",
+      "ClientID": "###AZURE_CLIENT_ID###",
+      "ClientSecret": "",
+      "Domain": "",
+      "AuthorizationEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/oauth2/v2.0/authorize",
+      "TokenEndpoint": "https://login.microsoftonline.com/###AZURE_ISSUER_ID###/oauth2/v2.0/token",
+      "Scope": "openid profile email offline_access User.Read api://###AZURE_CLIENT_ID###/api",
+      "RedirectURLs": [
+        "http://localhost:53000"
+      ],
+      "UseIDToken": true
+    }
+  }
+}

@@ -1,0 +1,130 @@
+services:
+  # Caddy reverse proxy
+  caddy:
+    image: caddy
+    restart: unless-stopped
+    networks: [netbird]
+    ports:
+      - '443:443'
+      - '443:443/udp'
+      - '80:80'
+    volumes:
+      - ./data-dirs/caddy-data:/data
+      - ./config-files/Caddyfile:/etc/caddy/Caddyfile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # UI dashboard
+  dashboard:
+    image: netbirdio/dashboard:latest
+    restart: unless-stopped
+    networks: [netbird]
+    env_file:
+      - ./env-files/dashboard.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # Signal
+  signal:
+    image: netbirdio/signal:latest
+    restart: unless-stopped
+    networks: [netbird]
+    volumes:
+      - ./data-dirs/signal-data:/var/lib/netbird
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # Relay
+  relay:
+    image: netbirdio/relay:latest
+    restart: unless-stopped
+    networks: [netbird]
+    env_file:
+      - ./env-files/relay.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # Management
+  management:
+    image: netbirdio/management:latest
+    restart: unless-stopped
+    networks: [netbird]
+    volumes:
+      - ./data-dirs/mgmt-data:/var/lib/netbird
+      - ./config-files/management.json:/etc/netbird/management.json
+    env_file:
+      - ./env-files/management.env
+    depends_on:
+      - dashboard
+      - postgres
+    command: [
+      "--port", "80",
+      "--log-file", "console",
+      "--log-level", "info",
+      "--disable-anonymous-metrics=true",
+      "--single-account-mode-domain=###NB_PUBLIC_FQDN###",
+      "--dns-domain=###NB_INTERNAL_DOMAIN###"
+      ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # Postgres
+  postgres:
+    image: 'postgres:16-alpine'
+    restart: always
+    networks: [netbird]
+    volumes:
+      - ./data-dirs/pgsql-data:/var/lib/postgresql/data
+    env_file:
+      - ./env-files/postgres.env
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"      
+  # Coturn
+  coturn:
+    image: coturn/coturn:latest
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./config-files/turnserver.conf:/etc/turnserver.conf:ro
+      #- ./privkey.pem:/etc/coturn/private/privkey.pem:ro
+      #- ./cert.pem:/etc/coturn/certs/cert.pem:ro
+    # only needed when TLS is enabled
+    domainname: ###NB_PUBLIC_FQDN###
+    command:
+      - -c /etc/turnserver.conf
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+  # DbBackup
+  backup:
+    image: ghcr.io/realorangeone/db-auto-backup:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./backups:/var/backups
+    environment:
+      - INCLUDE_LOGS=true
+      - COMPRESSION=gzip
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "500m"
+        max-file: "2"
+
+networks:
+  netbird:
